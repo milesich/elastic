@@ -27,7 +27,6 @@ type CountService struct {
 	headers    http.Header // custom request-level HTTP headers
 
 	index                  []string
-	typ                    []string
 	allowNoIndices         *bool
 	analyzeWildcard        *bool
 	analyzer               string
@@ -101,18 +100,6 @@ func (s *CountService) Index(index ...string) *CountService {
 		s.index = make([]string, 0)
 	}
 	s.index = append(s.index, index...)
-	return s
-}
-
-// Type sets the types to use to restrict the results.
-//
-// Deprecated: Types are in the process of being removed. Instead of using a type, prefer to
-// filter on a field on the document.
-func (s *CountService) Type(typ ...string) *CountService {
-	if s.typ == nil {
-		s.typ = make([]string, 0)
-	}
-	s.typ = append(s.typ, typ...)
 	return s
 }
 
@@ -244,18 +231,9 @@ func (s *CountService) buildURL() (string, url.Values, error) {
 	var err error
 	var path string
 
-	if len(s.index) > 0 && len(s.typ) > 0 {
-		path, err = uritemplates.Expand("/{index}/{type}/_count", map[string]string{
-			"index": strings.Join(s.index, ","),
-			"type":  strings.Join(s.typ, ","),
-		})
-	} else if len(s.index) > 0 {
+	if len(s.index) > 0 {
 		path, err = uritemplates.Expand("/{index}/_count", map[string]string{
 			"index": strings.Join(s.index, ","),
-		})
-	} else if len(s.typ) > 0 {
-		path, err = uritemplates.Expand("/_all/{type}/_count", map[string]string{
-			"type": strings.Join(s.typ, ","),
 		})
 	} else {
 		path = "/_all/_count"

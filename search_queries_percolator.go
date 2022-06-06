@@ -13,10 +13,8 @@ import "errors"
 type PercolatorQuery struct {
 	field                     string
 	name                      string
-	documentType              string // deprecated
 	documents                 []interface{}
 	indexedDocumentIndex      string
-	indexedDocumentType       string
 	indexedDocumentId         string
 	indexedDocumentRouting    string
 	indexedDocumentPreference string
@@ -40,12 +38,6 @@ func (q *PercolatorQuery) Name(name string) *PercolatorQuery {
 	return q
 }
 
-// Deprecated: DocumentType is deprecated as of 6.0.
-func (q *PercolatorQuery) DocumentType(typ string) *PercolatorQuery {
-	q.documentType = typ
-	return q
-}
-
 func (q *PercolatorQuery) Document(docs ...interface{}) *PercolatorQuery {
 	q.documents = append(q.documents, docs...)
 	return q
@@ -53,11 +45,6 @@ func (q *PercolatorQuery) Document(docs ...interface{}) *PercolatorQuery {
 
 func (q *PercolatorQuery) IndexedDocumentIndex(index string) *PercolatorQuery {
 	q.indexedDocumentIndex = index
-	return q
-}
-
-func (q *PercolatorQuery) IndexedDocumentType(typ string) *PercolatorQuery {
-	q.indexedDocumentType = typ
 	return q
 }
 
@@ -94,9 +81,6 @@ func (q *PercolatorQuery) Source() (interface{}, error) {
 	params := make(map[string]interface{})
 	source["percolate"] = params
 	params["field"] = q.field
-	if q.documentType != "" {
-		params["document_type"] = q.documentType
-	}
 	if q.name != "" {
 		params["name"] = q.name
 	}
@@ -111,9 +95,6 @@ func (q *PercolatorQuery) Source() (interface{}, error) {
 
 	if s := q.indexedDocumentIndex; s != "" {
 		params["index"] = s
-	}
-	if s := q.indexedDocumentType; s != "" {
-		params["type"] = s
 	}
 	if s := q.indexedDocumentId; s != "" {
 		params["id"] = s

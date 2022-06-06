@@ -14,50 +14,28 @@ func TestDeleteByQueryBuildURL(t *testing.T) {
 
 	tests := []struct {
 		Indices   []string
-		Types     []string
 		Expected  string
 		ExpectErr bool
 	}{
 		{
 			[]string{},
-			[]string{},
 			"",
 			true,
 		},
 		{
 			[]string{"index1"},
-			[]string{},
 			"/index1/_delete_by_query",
 			false,
 		},
 		{
 			[]string{"index1", "index2"},
-			[]string{},
 			"/index1%2Cindex2/_delete_by_query",
-			false,
-		},
-		{
-			[]string{},
-			[]string{"type1"},
-			"",
-			true,
-		},
-		{
-			[]string{"index1"},
-			[]string{"type1"},
-			"/index1/type1/_delete_by_query",
-			false,
-		},
-		{
-			[]string{"index1", "index2"},
-			[]string{"type1", "type2"},
-			"/index1%2Cindex2/type1%2Ctype2/_delete_by_query",
 			false,
 		},
 	}
 
 	for i, test := range tests {
-		builder := client.DeleteByQuery().Index(test.Indices...).Type(test.Types...)
+		builder := client.DeleteByQuery().Index(test.Indices...)
 		err := builder.Validate()
 		if err != nil {
 			if !test.ExpectErr {

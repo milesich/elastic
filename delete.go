@@ -30,7 +30,6 @@ type DeleteService struct {
 
 	id                  string
 	index               string
-	typ                 string
 	routing             string
 	timeout             string
 	version             interface{}
@@ -46,7 +45,6 @@ type DeleteService struct {
 func NewDeleteService(client *Client) *DeleteService {
 	return &DeleteService{
 		client: client,
-		typ:    "_doc",
 	}
 }
 
@@ -87,14 +85,6 @@ func (s *DeleteService) Header(name string, value string) *DeleteService {
 // Headers specifies the headers of the request.
 func (s *DeleteService) Headers(headers http.Header) *DeleteService {
 	s.headers = headers
-	return s
-}
-
-// Type is the type of the document.
-//
-// Deprecated: Types are in the process of being removed.
-func (s *DeleteService) Type(typ string) *DeleteService {
-	s.typ = typ
 	return s
 }
 
@@ -176,9 +166,8 @@ func (s *DeleteService) IfPrimaryTerm(primaryTerm int64) *DeleteService {
 // buildURL builds the URL for the operation.
 func (s *DeleteService) buildURL() (string, url.Values, error) {
 	// Build URL
-	path, err := uritemplates.Expand("/{index}/{type}/{id}", map[string]string{
+	path, err := uritemplates.Expand("/{index}/_doc/{id}", map[string]string{
 		"index": s.index,
-		"type":  s.typ,
 		"id":    s.id,
 	})
 	if err != nil {
@@ -232,9 +221,6 @@ func (s *DeleteService) buildURL() (string, url.Values, error) {
 // Validate checks if the operation is valid.
 func (s *DeleteService) Validate() error {
 	var invalid []string
-	if s.typ == "" {
-		invalid = append(invalid, "Type")
-	}
 	if s.id == "" {
 		invalid = append(invalid, "Id")
 	}
@@ -293,7 +279,6 @@ func (s *DeleteService) Do(ctx context.Context) (*DeleteResponse, error) {
 // DeleteResponse is the outcome of running DeleteService.Do.
 type DeleteResponse struct {
 	Index         string      `json:"_index,omitempty"`
-	Type          string      `json:"_type,omitempty"`
 	Id            string      `json:"_id,omitempty"`
 	Version       int64       `json:"_version,omitempty"`
 	Result        string      `json:"result,omitempty"`

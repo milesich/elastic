@@ -19,7 +19,6 @@ import (
 type BulkUpdateRequest struct {
 	BulkableRequest
 	index string
-	typ   string
 	id    string
 
 	routing         string
@@ -48,7 +47,6 @@ type bulkUpdateRequestCommand map[string]bulkUpdateRequestCommandOp
 //easyjson:json
 type bulkUpdateRequestCommandOp struct {
 	Index  string `json:"_index,omitempty"`
-	Type   string `json:"_type,omitempty"`
 	Id     string `json:"_id,omitempty"`
 	Parent string `json:"parent,omitempty"`
 	// RetryOnConflict is "_retry_on_conflict" for 6.0 and "retry_on_conflict" for 6.1+.
@@ -90,14 +88,6 @@ func (r *BulkUpdateRequest) UseEasyJSON(enable bool) *BulkUpdateRequest {
 // If unspecified, the index set on the BulkService will be used.
 func (r *BulkUpdateRequest) Index(index string) *BulkUpdateRequest {
 	r.index = index
-	r.source = nil
-	return r
-}
-
-// Type specifies the Elasticsearch type to use for this update request.
-// If unspecified, the type set on the BulkService will be used.
-func (r *BulkUpdateRequest) Type(typ string) *BulkUpdateRequest {
-	r.typ = typ
 	r.source = nil
 	return r
 }
@@ -239,10 +229,10 @@ func (r *BulkUpdateRequest) String() string {
 // See https://www.elastic.co/guide/en/elasticsearch/reference/7.0/docs-bulk.html
 // for details.
 func (r *BulkUpdateRequest) Source() ([]string, error) {
-	// { "update" : { "_index" : "test", "_type" : "type1", "_id" : "1", ... } }
+	// { "update" : { "_index" : "test", "_id" : "1", ... } }
 	// { "doc" : { "field1" : "value1", ... } }
 	// or
-	// { "update" : { "_index" : "test", "_type" : "type1", "_id" : "1", ... } }
+	// { "update" : { "_index" : "test", "_id" : "1", ... } }
 	// { "script" : { ... } }
 
 	if r.source != nil {
@@ -254,7 +244,6 @@ func (r *BulkUpdateRequest) Source() ([]string, error) {
 	// "update" ...
 	updateCommand := bulkUpdateRequestCommandOp{
 		Index:           r.index,
-		Type:            r.typ,
 		Id:              r.id,
 		Routing:         r.routing,
 		Parent:          r.parent,

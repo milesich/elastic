@@ -62,12 +62,12 @@ func TestBulkCreateRequestSerialization(t *testing.T) {
 		},
 		// #5
 		{
-			Request: NewBulkCreateRequest().Index("index1").Type("doc").Id("1").
+			Request: NewBulkCreateRequest().Index("index1").Id("1").
 				Version(0).
 				VersionType("external").
 				Doc(tweet{User: "olivere", Created: time.Date(2014, 1, 18, 23, 59, 58, 0, time.UTC)}),
 			Expected: []string{
-				`{"create":{"_index":"index1","_id":"1","_type":"doc","version":0,"version_type":"external"}}`,
+				`{"create":{"_index":"index1","_id":"1","version":0,"version_type":"external"}}`,
 				`{"user":"olivere","message":"","retweets":0,"created":"2014-01-18T23:59:58Z"}`,
 			},
 		},

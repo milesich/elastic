@@ -595,16 +595,6 @@ func (s *SearchSource) Source() (interface{}, error) {
 				m[name] = map[string]interface{}{
 					"path": path,
 				}
-			} else if hit.typ != "" {
-				src, err := hit.Source()
-				if err != nil {
-					return nil, err
-				}
-				typ := make(map[string]interface{})
-				typ[hit.typ] = src
-				m[name] = map[string]interface{}{
-					"type": typ,
-				}
 			} else {
 				// TODO the Java client throws here, because either path or typ must be specified
 				_ = m

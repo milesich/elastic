@@ -34,7 +34,6 @@ type XPackAsyncSearchSubmit struct {
 	source                     interface{}
 	searchType                 string // search_type
 	index                      []string
-	typ                        []string
 	routing                    string // routing
 	preference                 string // preference
 	requestCache               *bool  // request_cache
@@ -128,15 +127,6 @@ func (s *XPackAsyncSearchSubmit) Source(source interface{}) *XPackAsyncSearchSub
 // Index sets the names of the indices to use for search.
 func (s *XPackAsyncSearchSubmit) Index(index ...string) *XPackAsyncSearchSubmit {
 	s.index = append(s.index, index...)
-	return s
-}
-
-// Type adds search restrictions for a list of types.
-//
-// Deprecated: Types are in the process of being removed. Instead of using a type, prefer to
-// filter on a field on the document.
-func (s *XPackAsyncSearchSubmit) Type(typ ...string) *XPackAsyncSearchSubmit {
-	s.typ = append(s.typ, typ...)
 	return s
 }
 
@@ -541,18 +531,9 @@ func (s *XPackAsyncSearchSubmit) buildURL() (string, url.Values, error) {
 	var err error
 	var path string
 
-	if len(s.index) > 0 && len(s.typ) > 0 {
-		path, err = uritemplates.Expand("/{index}/{type}/_async_search", map[string]string{
-			"index": strings.Join(s.index, ","),
-			"type":  strings.Join(s.typ, ","),
-		})
-	} else if len(s.index) > 0 {
+	if len(s.index) > 0 {
 		path, err = uritemplates.Expand("/{index}/_async_search", map[string]string{
 			"index": strings.Join(s.index, ","),
-		})
-	} else if len(s.typ) > 0 {
-		path, err = uritemplates.Expand("/_all/{type}/_async_search", map[string]string{
-			"type": strings.Join(s.typ, ","),
 		})
 	} else {
 		path = "/_async_search"

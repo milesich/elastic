@@ -29,7 +29,6 @@ type ExistsService struct {
 
 	id         string
 	index      string
-	typ        string
 	preference string
 	realtime   *bool
 	refresh    string
@@ -41,7 +40,6 @@ type ExistsService struct {
 func NewExistsService(client *Client) *ExistsService {
 	return &ExistsService{
 		client: client,
-		typ:    "_doc",
 	}
 }
 
@@ -97,13 +95,6 @@ func (s *ExistsService) Index(index string) *ExistsService {
 	return s
 }
 
-// Type is the type of the document (use `_all` to fetch the first document
-// matching the ID across all types).
-func (s *ExistsService) Type(typ string) *ExistsService {
-	s.typ = typ
-	return s
-}
-
 // Preference specifies the node or shard the operation should be performed on (default: random).
 func (s *ExistsService) Preference(preference string) *ExistsService {
 	s.preference = preference
@@ -140,10 +131,9 @@ func (s *ExistsService) Parent(parent string) *ExistsService {
 // buildURL builds the URL for the operation.
 func (s *ExistsService) buildURL() (string, url.Values, error) {
 	// Build URL
-	path, err := uritemplates.Expand("/{index}/{type}/{id}", map[string]string{
+	path, err := uritemplates.Expand("/{index}/_doc/{id}", map[string]string{
 		"id":    s.id,
 		"index": s.index,
-		"type":  s.typ,
 	})
 	if err != nil {
 		return "", url.Values{}, err
@@ -189,9 +179,6 @@ func (s *ExistsService) Validate() error {
 	}
 	if s.index == "" {
 		invalid = append(invalid, "Index")
-	}
-	if s.typ == "" {
-		invalid = append(invalid, "Type")
 	}
 	if len(invalid) > 0 {
 		return fmt.Errorf("missing required fields: %v", invalid)

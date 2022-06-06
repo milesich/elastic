@@ -31,7 +31,6 @@ type MultiTermvectorService struct {
 	headers    http.Header // custom request-level HTTP headers
 
 	index           string
-	typ             string
 	fieldStatistics *bool
 	fields          []string
 	ids             []string
@@ -106,12 +105,6 @@ func (s *MultiTermvectorService) Add(docs ...*MultiTermvectorItem) *MultiTermvec
 // Index in which the document resides.
 func (s *MultiTermvectorService) Index(index string) *MultiTermvectorService {
 	s.index = index
-	return s
-}
-
-// Type of the document.
-func (s *MultiTermvectorService) Type(typ string) *MultiTermvectorService {
-	s.typ = typ
 	return s
 }
 
@@ -220,12 +213,7 @@ func (s *MultiTermvectorService) buildURL() (string, url.Values, error) {
 	var path string
 	var err error
 
-	if s.index != "" && s.typ != "" {
-		path, err = uritemplates.Expand("/{index}/{type}/_mtermvectors", map[string]string{
-			"index": s.index,
-			"type":  s.typ,
-		})
-	} else if s.index != "" && s.typ == "" {
+	if s.index != "" {
 		path, err = uritemplates.Expand("/{index}/_mtermvectors", map[string]string{
 			"index": s.index,
 		})
@@ -295,9 +283,6 @@ func (s *MultiTermvectorService) buildURL() (string, url.Values, error) {
 // Validate checks if the operation is valid.
 func (s *MultiTermvectorService) Validate() error {
 	var invalid []string
-	if s.index == "" && s.typ != "" {
-		invalid = append(invalid, "Index")
-	}
 	if len(invalid) > 0 {
 		return fmt.Errorf("missing required fields: %v", invalid)
 	}
@@ -357,7 +342,6 @@ type MultiTermvectorResponse struct {
 // MultiTermvectorItem is a single document to retrieve via MultiTermvectorService.
 type MultiTermvectorItem struct {
 	index            string
-	typ              string
 	id               string
 	doc              interface{}
 	fieldStatistics  *bool
@@ -379,11 +363,6 @@ func NewMultiTermvectorItem() *MultiTermvectorItem {
 
 func (s *MultiTermvectorItem) Index(index string) *MultiTermvectorItem {
 	s.index = index
-	return s
-}
-
-func (s *MultiTermvectorItem) Type(typ string) *MultiTermvectorItem {
-	s.typ = typ
 	return s
 }
 
@@ -481,9 +460,6 @@ func (s *MultiTermvectorItem) Source() interface{} {
 
 	if s.index != "" {
 		source["_index"] = s.index
-	}
-	if s.typ != "" {
-		source["_type"] = s.typ
 	}
 	if s.fields != nil {
 		source["fields"] = s.fields

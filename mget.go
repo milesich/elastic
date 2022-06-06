@@ -204,7 +204,6 @@ func (s *MgetService) Do(ctx context.Context) (*MgetResponse, error) {
 // MultiGetItem is a single document to retrieve via the MgetService.
 type MultiGetItem struct {
 	index        string
-	typ          string
 	id           string
 	routing      string
 	storedFields []string
@@ -221,12 +220,6 @@ func NewMultiGetItem() *MultiGetItem {
 // Index specifies the index name.
 func (item *MultiGetItem) Index(index string) *MultiGetItem {
 	item.index = index
-	return item
-}
-
-// Type specifies the type name.
-func (item *MultiGetItem) Type(typ string) *MultiGetItem {
-	item.typ = typ
 	return item
 }
 
@@ -279,9 +272,6 @@ func (item *MultiGetItem) Source() (interface{}, error) {
 
 	if item.index != "" {
 		source["_index"] = item.index
-	}
-	if item.typ != "" {
-		source["_type"] = item.typ
 	}
 	if item.fsc != nil {
 		src, err := item.fsc.Source()

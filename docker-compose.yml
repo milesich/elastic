@@ -1,6 +1,6 @@
 services:
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${VERSION:-7.17.1}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${VERSION:-8.2.2}
     hostname: elasticsearch
     environment:
       - cluster.name=elasticsearch
@@ -28,7 +28,7 @@ services:
     ports:
       - 9200:9200
   platinum:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${VERSION:-7.17.1}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${VERSION:-8.2.2}
     hostname: elasticsearch-platinum
     environment:
       - cluster.name=platinum
@@ -37,6 +37,8 @@ services:
       - xpack.license.self_generated.type=trial
       - xpack.security.enabled=true
       - xpack.watcher.enabled=true
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.security.http.ssl.enabled=false
       # - http.publish_host=localhost
       # - http.host=0.0.0.0
       # - transport.host=127.0.0.1

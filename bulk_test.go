@@ -438,7 +438,6 @@ func TestFailedBulkRequests(t *testing.T) {
   "items" : [ {
     "index" : {
       "_index" : "elastic-test",
-      "_type" : "_doc",
       "_id" : "1",
       "_version" : 1,
       "status" : 201
@@ -446,7 +445,6 @@ func TestFailedBulkRequests(t *testing.T) {
   }, {
     "create" : {
       "_index" : "elastic-test",
-      "_type" : "_doc",
       "_id" : "2",
       "_version" : 1,
       "status" : 423,
@@ -458,7 +456,6 @@ func TestFailedBulkRequests(t *testing.T) {
   }, {
     "delete" : {
       "_index" : "elastic-test",
-      "_type" : "_doc",
       "_id" : "1",
       "_version" : 2,
       "status" : 404,
@@ -467,7 +464,6 @@ func TestFailedBulkRequests(t *testing.T) {
   }, {
     "update" : {
       "_index" : "elastic-test",
-      "_type" : "_doc",
       "_id" : "2",
       "_version" : 2,
       "status" : 200

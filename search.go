@@ -30,7 +30,6 @@ type SearchService struct {
 	source                     interface{}
 	searchType                 string // search_type
 	index                      []string
-	typ                        []string
 	routing                    string // routing
 	preference                 string // preference
 	requestCache               *bool  // request_cache
@@ -120,15 +119,6 @@ func (s *SearchService) Source(source interface{}) *SearchService {
 // Index sets the names of the indices to use for search.
 func (s *SearchService) Index(index ...string) *SearchService {
 	s.index = append(s.index, index...)
-	return s
-}
-
-// Type adds search restrictions for a list of types.
-//
-// Deprecated: Types are in the process of being removed. Instead of using a type, prefer to
-// filter on a field on the document.
-func (s *SearchService) Type(typ ...string) *SearchService {
-	s.typ = append(s.typ, typ...)
 	return s
 }
 
@@ -520,18 +510,9 @@ func (s *SearchService) buildURL() (string, url.Values, error) {
 	var err error
 	var path string
 
-	if len(s.index) > 0 && len(s.typ) > 0 {
-		path, err = uritemplates.Expand("/{index}/{type}/_search", map[string]string{
-			"index": strings.Join(s.index, ","),
-			"type":  strings.Join(s.typ, ","),
-		})
-	} else if len(s.index) > 0 {
+	if len(s.index) > 0 {
 		path, err = uritemplates.Expand("/{index}/_search", map[string]string{
 			"index": strings.Join(s.index, ","),
-		})
-	} else if len(s.typ) > 0 {
-		path, err = uritemplates.Expand("/_all/{type}/_search", map[string]string{
-			"type": strings.Join(s.typ, ","),
 		})
 	} else {
 		path = "/_search"
@@ -766,7 +747,6 @@ func (h *TotalHits) UnmarshalJSON(data []byte) error {
 type SearchHit struct {
 	Score          *float64                       `json:"_score,omitempty"`   // computed score
 	Index          string                         `json:"_index,omitempty"`   // index name
-	Type           string                         `json:"_type,omitempty"`    // type meta field
 	Id             string                         `json:"_id,omitempty"`      // external or internal
 	Uid            string                         `json:"_uid,omitempty"`     // uid meta field (see MapperService.java for all meta fields)
 	Routing        string                         `json:"_routing,omitempty"` // routing meta field
@@ -860,7 +840,6 @@ type SearchSuggestion struct {
 type SearchSuggestionOption struct {
 	Text            string              `json:"text"`
 	Index           string              `json:"_index"`
-	Type            string              `json:"_type"`
 	Id              string              `json:"_id"`
 	Score           float64             `json:"score"`  // term and phrase suggesters uses "score" as of 6.2.4
 	ScoreUnderscore float64             `json:"_score"` // completion and context suggesters uses "_score" as of 6.2.4

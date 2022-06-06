@@ -16,7 +16,6 @@ package elastic
 type InnerHit struct {
 	source *SearchSource
 	path   string
-	typ    string
 
 	name string
 }
@@ -28,11 +27,6 @@ func NewInnerHit() *InnerHit {
 
 func (hit *InnerHit) Path(path string) *InnerHit {
 	hit.path = path
-	return hit
-}
-
-func (hit *InnerHit) Type(typ string) *InnerHit {
-	hit.typ = typ
 	return hit
 }
 
@@ -165,8 +159,8 @@ func (hit *InnerHit) Source() (interface{}, error) {
 		return nil, nil
 	}
 
-	// Notice that hit.typ and hit.path are not exported here.
-	// They are only used with SearchSource and serialized there.
+	// Notice that hit.path is not exported here.
+	// It is only used with SearchSource and serialized there.
 
 	if hit.name != "" {
 		source["name"] = hit.name

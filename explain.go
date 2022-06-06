@@ -28,7 +28,6 @@ type ExplainService struct {
 
 	id                     string
 	index                  string
-	typ                    string
 	q                      string
 	routing                string
 	lenient                *bool
@@ -52,7 +51,6 @@ type ExplainService struct {
 func NewExplainService(client *Client) *ExplainService {
 	return &ExplainService{
 		client:         client,
-		typ:            "_doc",
 		xSource:        make([]string, 0),
 		xSourceExclude: make([]string, 0),
 		fields:         make([]string, 0),
@@ -109,14 +107,6 @@ func (s *ExplainService) Id(id string) *ExplainService {
 // Index is the name of the index.
 func (s *ExplainService) Index(index string) *ExplainService {
 	s.index = index
-	return s
-}
-
-// Type is the type of the document.
-//
-// Deprecated: Types are in the process of being removed.
-func (s *ExplainService) Type(typ string) *ExplainService {
-	s.typ = typ
 	return s
 }
 
@@ -240,21 +230,10 @@ func (s *ExplainService) BodyString(body string) *ExplainService {
 // buildURL builds the URL for the operation.
 func (s *ExplainService) buildURL() (string, url.Values, error) {
 	// Build URL
-	var path string
-	var err error
-
-	if s.typ == "" || s.typ == "_doc" {
-		path, err = uritemplates.Expand("/{index}/_explain/{id}", map[string]string{
-			"id":    s.id,
-			"index": s.index,
-		})
-	} else {
-		path, err = uritemplates.Expand("/{index}/{type}/{id}/_explain", map[string]string{
-			"id":    s.id,
-			"index": s.index,
-			"type":  s.typ,
-		})
-	}
+	path, err := uritemplates.Expand("/{index}/_explain/{id}", map[string]string{
+		"id":    s.id,
+		"index": s.index,
+	})
 	if err != nil {
 		return "", url.Values{}, err
 	}
@@ -327,9 +306,6 @@ func (s *ExplainService) Validate() error {
 	if s.index == "" {
 		invalid = append(invalid, "Index")
 	}
-	if s.typ == "" {
-		invalid = append(invalid, "Type")
-	}
 	if s.id == "" {
 		invalid = append(invalid, "Id")
 	}
@@ -383,7 +359,6 @@ func (s *ExplainService) Do(ctx context.Context) (*ExplainResponse, error) {
 // ExplainResponse is the response of ExplainService.Do.
 type ExplainResponse struct {
 	Index       string                 `json:"_index"`
-	Type        string                 `json:"_type"`
 	Id          string                 `json:"_id"`
 	Matched     bool                   `json:"matched"`
 	Explanation map[string]interface{} `json:"explanation"`

@@ -30,7 +30,7 @@ func TestExplain(t *testing.T) {
 
 	// Explain
 	query := NewTermQuery("user", "olivere")
-	expl, err := client.Explain(testIndexName, "_doc", "1").Query(query).Do(context.TODO())
+	expl, err := client.Explain(testIndexName, "1").Query(query).Do(context.TODO())
 	if err != nil {
 		t.Fatal(err)
 	}

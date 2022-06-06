@@ -64,7 +64,7 @@ func TestTermsQueryWithEmptyArray(t *testing.T) {
 
 func TestTermsQueryWithTermsLookup(t *testing.T) {
 	q := NewTermsQuery("user").
-		TermsLookup(NewTermsLookup().Index("users").Type("user").Id("2").Path("followers"))
+		TermsLookup(NewTermsLookup().Index("users").Id("2").Path("followers"))
 	src, err := q.Source()
 	if err != nil {
 		t.Fatal(err)
@@ -74,7 +74,7 @@ func TestTermsQueryWithTermsLookup(t *testing.T) {
 		t.Fatalf("marshaling to JSON failed: %v", err)
 	}
 	got := string(data)
-	expected := `{"terms":{"user":{"id":"2","index":"users","path":"followers","type":"user"}}}`
+	expected := `{"terms":{"user":{"id":"2","index":"users","path":"followers"}}}`
 	if got != expected {
 		t.Errorf("expected\n%s\n,got:\n%s", expected, got)
 	}

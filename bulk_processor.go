@@ -34,7 +34,7 @@ var (
 // returned with a status of 408, 429, 503 or 507. You can change this
 // behavior with RetryItemStatusCodes.
 //
-// The caller is responsible for setting the index and type on every
+// The caller is responsible for setting the index on every
 // bulk request added to BulkProcessorService.
 //
 // BulkProcessorService takes ideas from the BulkProcessor of the

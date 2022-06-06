@@ -19,7 +19,6 @@ import (
 type BulkCreateRequest struct {
 	BulkableRequest
 	index           string
-	typ             string
 	id              string
 	opType          string
 	routing         string
@@ -44,7 +43,6 @@ type bulkCreateRequestCommand map[string]bulkCreateRequestCommandOp
 type bulkCreateRequestCommandOp struct {
 	Index  string `json:"_index,omitempty"`
 	Id     string `json:"_id,omitempty"`
-	Type   string `json:"_type,omitempty"`
 	Parent string `json:"parent,omitempty"`
 	// RetryOnConflict is "_retry_on_conflict" for 6.0 and "retry_on_conflict" for 6.1+.
 	RetryOnConflict *int   `json:"retry_on_conflict,omitempty"`
@@ -78,14 +76,6 @@ func (r *BulkCreateRequest) UseEasyJSON(enable bool) *BulkCreateRequest {
 // If unspecified, the index set on the BulkService will be used.
 func (r *BulkCreateRequest) Index(index string) *BulkCreateRequest {
 	r.index = index
-	r.source = nil
-	return r
-}
-
-// Type specifies the Elasticsearch type to use for this create request.
-// If unspecified, the type set on the BulkService will be used.
-func (r *BulkCreateRequest) Type(typ string) *BulkCreateRequest {
-	r.typ = typ
 	r.source = nil
 	return r
 }
@@ -181,7 +171,7 @@ func (r *BulkCreateRequest) String() string {
 // See https://www.elastic.co/guide/en/elasticsearch/reference/7.0/docs-bulk.html
 // for details.
 func (r *BulkCreateRequest) Source() ([]string, error) {
-	// { "create" : { "_index" : "test", "_type" : "type1", "_id" : "1" } }
+	// { "create" : { "_index" : "test", "_id" : "1" } }
 	// { "field1" : "value1" }
 
 	if r.source != nil {
@@ -193,7 +183,6 @@ func (r *BulkCreateRequest) Source() ([]string, error) {
 	// "index" ...
 	indexCommand := bulkCreateRequestCommandOp{
 		Index:           r.index,
-		Type:            r.typ,
 		Id:              r.id,
 		Routing:         r.routing,
 		Parent:          r.parent,

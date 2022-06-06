@@ -13,38 +13,33 @@ func TestIndicesGetFieldMappingURL(t *testing.T) {
 
 	tests := []struct {
 		Indices  []string
-		Types    []string
 		Fields   []string
 		Expected string
 	}{
 		{
 			[]string{},
 			[]string{},
-			[]string{},
-			"/_all/_mapping/_all/field/%2A",
+			"/_all/_mapping/field/%2A",
 		},
 		{
 			[]string{},
-			[]string{"tweet"},
 			[]string{"message"},
-			"/_all/_mapping/tweet/field/message",
+			"/_all/_mapping/field/message",
 		},
 		{
 			[]string{"twitter"},
-			[]string{"tweet"},
 			[]string{"*.id"},
-			"/twitter/_mapping/tweet/field/%2A.id",
+			"/twitter/_mapping/field/%2A.id",
 		},
 		{
 			[]string{"store-1", "store-2"},
-			[]string{"tweet", "user"},
 			[]string{"message", "*.id"},
-			"/store-1%2Cstore-2/_mapping/tweet%2Cuser/field/message%2C%2A.id",
+			"/store-1%2Cstore-2/_mapping/field/message%2C%2A.id",
 		},
 	}
 
 	for _, test := range tests {
-		path, _, err := client.GetFieldMapping().Index(test.Indices...).Type(test.Types...).Field(test.Fields...).buildURL()
+		path, _, err := client.GetFieldMapping().Index(test.Indices...).Field(test.Fields...).buildURL()
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -29,7 +29,6 @@ type IndicesGetMappingService struct {
 	headers    http.Header // custom request-level HTTP headers
 
 	index             []string
-	typ               []string
 	local             *bool
 	ignoreUnavailable *bool
 	allowNoIndices    *bool
@@ -47,7 +46,6 @@ func NewIndicesGetMappingService(client *Client) *IndicesGetMappingService {
 	return &IndicesGetMappingService{
 		client: client,
 		index:  make([]string, 0),
-		typ:    make([]string, 0),
 	}
 }
 
@@ -97,12 +95,6 @@ func (s *IndicesGetMappingService) Index(indices ...string) *IndicesGetMappingSe
 	return s
 }
 
-// Type is a list of document types.
-func (s *IndicesGetMappingService) Type(types ...string) *IndicesGetMappingService {
-	s.typ = append(s.typ, types...)
-	return s
-}
-
 // AllowNoIndices indicates whether to ignore if a wildcard indices
 // expression resolves into no concrete indices.
 // This includes `_all` string or when no indices have been specified.
@@ -134,7 +126,7 @@ func (s *IndicesGetMappingService) IgnoreUnavailable(ignoreUnavailable bool) *In
 
 // buildURL builds the URL for the operation.
 func (s *IndicesGetMappingService) buildURL() (string, url.Values, error) {
-	var index, typ []string
+	var index []string
 
 	if len(s.index) > 0 {
 		index = s.index
@@ -142,16 +134,9 @@ func (s *IndicesGetMappingService) buildURL() (string, url.Values, error) {
 		index = []string{"_all"}
 	}
 
-	if len(s.typ) > 0 {
-		typ = s.typ
-	} else {
-		typ = []string{"_all"}
-	}
-
 	// Build URL
-	path, err := uritemplates.Expand("/{index}/_mapping/{type}", map[string]string{
+	path, err := uritemplates.Expand("/{index}/_mapping", map[string]string{
 		"index": strings.Join(index, ","),
-		"type":  strings.Join(typ, ","),
 	})
 	if err != nil {
 		return "", url.Values{}, err

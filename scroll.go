@@ -33,7 +33,6 @@ type ScrollService struct {
 	headers    http.Header // custom request-level HTTP headers
 
 	indices            []string
-	types              []string
 	keepAlive          string
 	body               interface{}
 	ss                 *SearchSource
@@ -114,18 +113,6 @@ func (s *ScrollService) Index(indices ...string) *ScrollService {
 		s.indices = make([]string, 0)
 	}
 	s.indices = append(s.indices, indices...)
-	return s
-}
-
-// Type sets the name of one or more types to iterate over.
-//
-// Deprecated: Types are in the process of being removed. Instead of using a type, prefer to
-// filter on a field on the document.
-func (s *ScrollService) Type(types ...string) *ScrollService {
-	if s.types == nil {
-		s.types = make([]string, 0)
-	}
-	s.types = append(s.types, types...)
 	return s
 }
 
@@ -446,20 +433,11 @@ func (s *ScrollService) buildFirstURL() (string, url.Values, error) {
 	// Build URL
 	var err error
 	var path string
-	if len(s.indices) == 0 && len(s.types) == 0 {
+	if len(s.indices) == 0 {
 		path = "/_search"
-	} else if len(s.indices) > 0 && len(s.types) == 0 {
+	} else if len(s.indices) > 0 {
 		path, err = uritemplates.Expand("/{index}/_search", map[string]string{
 			"index": strings.Join(s.indices, ","),
-		})
-	} else if len(s.indices) == 0 && len(s.types) > 0 {
-		path, err = uritemplates.Expand("/_all/{typ}/_search", map[string]string{
-			"typ": strings.Join(s.types, ","),
-		})
-	} else {
-		path, err = uritemplates.Expand("/{index}/{typ}/_search", map[string]string{
-			"index": strings.Join(s.indices, ","),
-			"typ":   strings.Join(s.types, ","),
 		})
 	}
 	if err != nil {

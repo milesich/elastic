@@ -59,7 +59,6 @@ func TestPercolatorQueryWithExistingDocument(t *testing.T) {
 	q := NewPercolatorQuery().
 		Field("query").
 		IndexedDocumentIndex("my-index").
-		IndexedDocumentType("_doc").
 		IndexedDocumentId("2").
 		IndexedDocumentVersion(1)
 	src, err := q.Source()
@@ -71,7 +70,7 @@ func TestPercolatorQueryWithExistingDocument(t *testing.T) {
 		t.Fatalf("marshaling to JSON failed: %v", err)
 	}
 	got := string(data)
-	expected := `{"percolate":{"field":"query","id":"2","index":"my-index","type":"_doc","version":1}}`
+	expected := `{"percolate":{"field":"query","id":"2","index":"my-index","version":1}}`
 	if got != expected {
 		t.Errorf("expected\n%s\n,got:\n%s", expected, got)
 	}

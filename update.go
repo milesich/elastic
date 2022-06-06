@@ -27,7 +27,6 @@ type UpdateService struct {
 	headers    http.Header // custom request-level HTTP headers
 
 	index               string
-	typ                 string
 	id                  string
 	routing             string
 	parent              string
@@ -53,7 +52,6 @@ type UpdateService struct {
 func NewUpdateService(client *Client) *UpdateService {
 	return &UpdateService{
 		client: client,
-		typ:    "_doc",
 		fields: make([]string, 0),
 	}
 }
@@ -101,14 +99,6 @@ func (s *UpdateService) Headers(headers http.Header) *UpdateService {
 // Index is the name of the Elasticsearch index (required).
 func (s *UpdateService) Index(name string) *UpdateService {
 	s.index = name
-	return s
-}
-
-// Type is the type of the document.
-//
-// Deprecated: Types are in the process of being removed.
-func (s *UpdateService) Type(typ string) *UpdateService {
-	s.typ = typ
 	return s
 }
 
@@ -255,20 +245,10 @@ func (s *UpdateService) FetchSourceContext(fetchSourceContext *FetchSourceContex
 // url returns the URL part of the document request.
 func (s *UpdateService) url() (string, url.Values, error) {
 	// Build url
-	var path string
-	var err error
-	if s.typ == "" || s.typ == "_doc" {
-		path, err = uritemplates.Expand("/{index}/_update/{id}", map[string]string{
-			"index": s.index,
-			"id":    s.id,
-		})
-	} else {
-		path, err = uritemplates.Expand("/{index}/{type}/{id}/_update", map[string]string{
-			"index": s.index,
-			"type":  s.typ,
-			"id":    s.id,
-		})
-	}
+	path, err := uritemplates.Expand("/{index}/_update/{id}", map[string]string{
+		"index": s.index,
+		"id":    s.id,
+	})
 	if err != nil {
 		return "", url.Values{}, err
 	}
@@ -399,7 +379,6 @@ func (s *UpdateService) Do(ctx context.Context) (*UpdateResponse, error) {
 // UpdateResponse is the result of updating a document in Elasticsearch.
 type UpdateResponse struct {
 	Index         string      `json:"_index,omitempty"`
-	Type          string      `json:"_type,omitempty"`
 	Id            string      `json:"_id,omitempty"`
 	Version       int64       `json:"_version,omitempty"`
 	Result        string      `json:"result,omitempty"`

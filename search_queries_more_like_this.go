@@ -290,7 +290,6 @@ type MoreLikeThisQueryItem struct {
 	likeText string
 
 	index       string
-	typ         string
 	id          string
 	doc         interface{}
 	fields      []string
@@ -316,14 +315,6 @@ func (item *MoreLikeThisQueryItem) LikeText(likeText string) *MoreLikeThisQueryI
 // Index represents the index of the item.
 func (item *MoreLikeThisQueryItem) Index(index string) *MoreLikeThisQueryItem {
 	item.index = index
-	return item
-}
-
-// Type represents the document type of the item.
-//
-// Deprecated: Types are in the process of being removed.
-func (item *MoreLikeThisQueryItem) Type(typ string) *MoreLikeThisQueryItem {
-	item.typ = typ
 	return item
 }
 
@@ -380,9 +371,6 @@ func (item *MoreLikeThisQueryItem) Source() (interface{}, error) {
 
 	if item.index != "" {
 		source["_index"] = item.index
-	}
-	if item.typ != "" {
-		source["_type"] = item.typ
 	}
 	if item.id != "" {
 		source["_id"] = item.id

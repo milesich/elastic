@@ -13,33 +13,24 @@ func TestIndicesGetMappingURL(t *testing.T) {
 
 	tests := []struct {
 		Indices  []string
-		Types    []string
 		Expected string
 	}{
 		{
 			[]string{},
-			[]string{},
-			"/_all/_mapping/_all",
-		},
-		{
-			[]string{},
-			[]string{"tweet"},
-			"/_all/_mapping/tweet",
+			"/_all/_mapping",
 		},
 		{
 			[]string{"twitter"},
-			[]string{"tweet"},
-			"/twitter/_mapping/tweet",
+			"/twitter/_mapping",
 		},
 		{
 			[]string{"store-1", "store-2"},
-			[]string{"tweet", "user"},
-			"/store-1%2Cstore-2/_mapping/tweet%2Cuser",
+			"/store-1%2Cstore-2/_mapping",
 		},
 	}
 
 	for _, test := range tests {
-		path, _, err := client.GetMapping().Index(test.Indices...).Type(test.Types...).buildURL()
+		path, _, err := client.GetMapping().Index(test.Indices...).buildURL()
 		if err != nil {
 			t.Fatal(err)
 		}

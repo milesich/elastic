@@ -30,7 +30,6 @@ type IndexService struct {
 
 	id                  string
 	index               string
-	typ                 string
 	parent              string
 	routing             string
 	timeout             string
@@ -52,7 +51,6 @@ type IndexService struct {
 func NewIndexService(client *Client) *IndexService {
 	return &IndexService{
 		client: client,
-		typ:    "_doc",
 	}
 }
 
@@ -105,14 +103,6 @@ func (s *IndexService) Id(id string) *IndexService {
 // Index is the name of the index.
 func (s *IndexService) Index(index string) *IndexService {
 	s.index = index
-	return s
-}
-
-// Type is the type of the document.
-//
-// Deprecated: Types are in the process of being removed.
-func (s *IndexService) Type(typ string) *IndexService {
-	s.typ = typ
 	return s
 }
 
@@ -229,18 +219,16 @@ func (s *IndexService) buildURL() (string, string, url.Values, error) {
 	if s.id != "" {
 		// Create document with manual id
 		method = "PUT"
-		path, err = uritemplates.Expand("/{index}/{type}/{id}", map[string]string{
+		path, err = uritemplates.Expand("/{index}/_doc/{id}", map[string]string{
 			"id":    s.id,
 			"index": s.index,
-			"type":  s.typ,
 		})
 	} else {
 		// Automatic ID generation
 		// See https://www.elastic.co/guide/en/elasticsearch/reference/7.0/docs-index_.html#index-creation
 		method = "POST"
-		path, err = uritemplates.Expand("/{index}/{type}/", map[string]string{
+		path, err = uritemplates.Expand("/{index}/_doc/", map[string]string{
 			"index": s.index,
-			"type":  s.typ,
 		})
 	}
 	if err != nil {
@@ -309,9 +297,6 @@ func (s *IndexService) Validate() error {
 	if s.index == "" {
 		invalid = append(invalid, "Index")
 	}
-	if s.typ == "" {
-		invalid = append(invalid, "Type")
-	}
 	if s.bodyString == "" && s.bodyJson == nil {
 		invalid = append(invalid, "BodyJson")
 	}
@@ -365,7 +350,6 @@ func (s *IndexService) Do(ctx context.Context) (*IndexResponse, error) {
 // IndexResponse is the result of indexing a document in Elasticsearch.
 type IndexResponse struct {
 	Index         string      `json:"_index,omitempty"`
-	Type          string      `json:"_type,omitempty"`
 	Id            string      `json:"_id,omitempty"`
 	Version       int64       `json:"_version,omitempty"`
 	Result        string      `json:"result,omitempty"`

@@ -10,7 +10,6 @@ package elastic
 // https://www.elastic.co/guide/en/elasticsearch/reference/7.0/query-dsl-terms-query.html#query-dsl-terms-lookup.
 type TermsLookup struct {
 	index   string
-	typ     string
 	id      string
 	path    string
 	routing string
@@ -25,14 +24,6 @@ func NewTermsLookup() *TermsLookup {
 // Index name.
 func (t *TermsLookup) Index(index string) *TermsLookup {
 	t.index = index
-	return t
-}
-
-// Type name.
-//
-// Deprecated: Types are in the process of being removed.
-func (t *TermsLookup) Type(typ string) *TermsLookup {
-	t.typ = typ
 	return t
 }
 
@@ -59,9 +50,6 @@ func (t *TermsLookup) Source() (interface{}, error) {
 	src := make(map[string]interface{})
 	if t.index != "" {
 		src["index"] = t.index
-	}
-	if t.typ != "" {
-		src["type"] = t.typ
 	}
 	if t.id != "" {
 		src["id"] = t.id

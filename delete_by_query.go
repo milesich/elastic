@@ -26,7 +26,6 @@ type DeleteByQueryService struct {
 	headers    http.Header // custom request-level HTTP headers
 
 	index                  []string
-	typ                    []string
 	query                  Query
 	body                   interface{}
 	xSource                []string
@@ -126,15 +125,6 @@ func (s *DeleteByQueryService) Headers(headers http.Header) *DeleteByQueryServic
 // Index sets the indices on which to perform the delete operation.
 func (s *DeleteByQueryService) Index(index ...string) *DeleteByQueryService {
 	s.index = append(s.index, index...)
-	return s
-}
-
-// Type limits the delete operation to the given types.
-//
-// Deprecated: Types are in the process of being removed. Instead of
-// using a type, prefer to filter on a field of the document.
-func (s *DeleteByQueryService) Type(typ ...string) *DeleteByQueryService {
-	s.typ = append(s.typ, typ...)
 	return s
 }
 
@@ -480,18 +470,9 @@ func (s *DeleteByQueryService) Body(body string) *DeleteByQueryService {
 // buildURL builds the URL for the operation.
 func (s *DeleteByQueryService) buildURL() (string, url.Values, error) {
 	// Build URL
-	var err error
-	var path string
-	if len(s.typ) > 0 {
-		path, err = uritemplates.Expand("/{index}/{type}/_delete_by_query", map[string]string{
-			"index": strings.Join(s.index, ","),
-			"type":  strings.Join(s.typ, ","),
-		})
-	} else {
-		path, err = uritemplates.Expand("/{index}/_delete_by_query", map[string]string{
-			"index": strings.Join(s.index, ","),
-		})
-	}
+	path, err := uritemplates.Expand("/{index}/_delete_by_query", map[string]string{
+		"index": strings.Join(s.index, ","),
+	})
 	if err != nil {
 		return "", url.Values{}, err
 	}
@@ -782,7 +763,6 @@ type BulkIndexByScrollResponse struct {
 
 type bulkIndexByScrollResponseFailure struct {
 	Index  string `json:"index,omitempty"`
-	Type   string `json:"type,omitempty"`
 	Id     string `json:"id,omitempty"`
 	Status int    `json:"status,omitempty"`
 	Shard  int    `json:"shard,omitempty"`

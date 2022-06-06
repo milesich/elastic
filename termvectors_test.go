@@ -15,38 +15,23 @@ func TestTermVectorsBuildURL(t *testing.T) {
 
 	tests := []struct {
 		Index    string
-		Type     string
 		Id       string
 		Expected string
 	}{
 		{
 			"twitter",
-			"_doc",
-			"",
-			"/twitter/_doc/_termvectors",
-		},
-		{
-			"twitter",
-			"",
 			"",
 			"/twitter/_termvectors",
 		},
 		{
 			"twitter",
-			"_doc",
-			"1",
-			"/twitter/_doc/1/_termvectors",
-		},
-		{
-			"twitter",
-			"",
 			"1",
 			"/twitter/_termvectors/1",
 		},
 	}
 
 	for _, test := range tests {
-		builder := client.TermVectors(test.Index).Type(test.Type)
+		builder := client.TermVectors(test.Index)
 		if test.Id != "" {
 			builder = builder.Id(test.Id)
 		}

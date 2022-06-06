@@ -14,42 +14,25 @@ func TestMultiTermVectorsValidateAndBuildURL(t *testing.T) {
 
 	tests := []struct {
 		Index                 string
-		Type                  string
 		Expected              string
 		ExpectValidateFailure bool
 	}{
-		// #0: No index, no type
+		// #0: No index
 		{
-			"",
 			"",
 			"/_mtermvectors",
 			false,
 		},
-		// #1: Index only
+		// #1: Index
 		{
 			"twitter",
-			"",
 			"/twitter/_mtermvectors",
-			false,
-		},
-		// #2: Type without index
-		{
-			"",
-			"doc",
-			"",
-			true,
-		},
-		// #3: Both index and type
-		{
-			"twitter",
-			"doc",
-			"/twitter/doc/_mtermvectors",
 			false,
 		},
 	}
 
 	for i, test := range tests {
-		builder := client.MultiTermVectors().Index(test.Index).Type(test.Type)
+		builder := client.MultiTermVectors().Index(test.Index)
 		// Validate
 		err := builder.Validate()
 		if err != nil {

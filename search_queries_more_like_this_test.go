@@ -31,7 +31,7 @@ func TestMoreLikeThisQuerySourceWithLikeAndUnlikeItems(t *testing.T) {
 	q := NewMoreLikeThisQuery()
 	q = q.LikeItems(
 		NewMoreLikeThisQueryItem().Id("1"),
-		NewMoreLikeThisQueryItem().Index(testIndexName2).Type("comment").Id("2").Routing("routing_id"),
+		NewMoreLikeThisQueryItem().Index(testIndexName2).Id("2").Routing("routing_id"),
 	)
 	q = q.IgnoreLikeItems(NewMoreLikeThisQueryItem().Id("3"))
 	src, err := q.Source()
@@ -43,7 +43,7 @@ func TestMoreLikeThisQuerySourceWithLikeAndUnlikeItems(t *testing.T) {
 		t.Fatal(err)
 	}
 	got := string(data)
-	expected := `{"more_like_this":{"like":[{"_id":"1"},{"_id":"2","_index":"elastic-test2","_type":"comment","routing":"routing_id"}],"unlike":[{"_id":"3"}]}}`
+	expected := `{"more_like_this":{"like":[{"_id":"1"},{"_id":"2","_index":"elastic-test2","routing":"routing_id"}],"unlike":[{"_id":"3"}]}}`
 	if got != expected {
 		t.Fatalf("expected\n%s\n,got:\n%s", expected, got)
 	}

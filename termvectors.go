@@ -31,7 +31,6 @@ type TermvectorsService struct {
 
 	id               string
 	index            string
-	typ              string
 	dfs              *bool
 	doc              interface{}
 	fieldStatistics  *bool
@@ -102,14 +101,6 @@ func (s *TermvectorsService) Headers(headers http.Header) *TermvectorsService {
 // Index in which the document resides.
 func (s *TermvectorsService) Index(index string) *TermvectorsService {
 	s.index = index
-	return s
-}
-
-// Type of the document.
-//
-// Deprecated: Types are in the process of being removed.
-func (s *TermvectorsService) Type(typ string) *TermvectorsService {
-	s.typ = typ
 	return s
 }
 
@@ -241,21 +232,12 @@ func (s *TermvectorsService) buildURL() (string, url.Values, error) {
 	var pathParam = map[string]string{
 		"index": s.index,
 	}
-	path := "/{index}"
+	path := "/{index}/_termvectors"
 	var err error
 
-	if s.typ != "" {
-		pathParam["type"] = s.typ
-		path += "/{type}"
-	} else {
-		path += "/_termvectors"
-	}
 	if s.id != "" {
 		pathParam["id"] = s.id
 		path += "/{id}"
-	}
-	if s.typ != "" {
-		path += "/_termvectors"
 	}
 
 	path, err = uritemplates.Expand(path, pathParam)
@@ -511,7 +493,6 @@ type TermVectorsFieldInfo struct {
 // TermvectorsResponse is the response of TermvectorsService.Do.
 type TermvectorsResponse struct {
 	Index       string                          `json:"_index"`
-	Type        string                          `json:"_type"`
 	Id          string                          `json:"_id,omitempty"`
 	Version     int                             `json:"_version"`
 	Found       bool                            `json:"found"`

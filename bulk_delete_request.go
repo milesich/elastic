@@ -21,7 +21,6 @@ import (
 type BulkDeleteRequest struct {
 	BulkableRequest
 	index         string
-	typ           string
 	id            string
 	parent        string
 	routing       string
@@ -41,7 +40,6 @@ type bulkDeleteRequestCommand map[string]bulkDeleteRequestCommandOp
 //easyjson:json
 type bulkDeleteRequestCommandOp struct {
 	Index         string `json:"_index,omitempty"`
-	Type          string `json:"_type,omitempty"`
 	Id            string `json:"_id,omitempty"`
 	Parent        string `json:"parent,omitempty"`
 	Routing       string `json:"routing,omitempty"`
@@ -70,14 +68,6 @@ func (r *BulkDeleteRequest) UseEasyJSON(enable bool) *BulkDeleteRequest {
 // If unspecified, the index set on the BulkService will be used.
 func (r *BulkDeleteRequest) Index(index string) *BulkDeleteRequest {
 	r.index = index
-	r.source = nil
-	return r
-}
-
-// Type specifies the Elasticsearch type to use for this delete request.
-// If unspecified, the type set on the BulkService will be used.
-func (r *BulkDeleteRequest) Type(typ string) *BulkDeleteRequest {
-	r.typ = typ
 	r.source = nil
 	return r
 }
@@ -155,7 +145,6 @@ func (r *BulkDeleteRequest) Source() ([]string, error) {
 	command := bulkDeleteRequestCommand{
 		"delete": bulkDeleteRequestCommandOp{
 			Index:         r.index,
-			Type:          r.typ,
 			Id:            r.id,
 			Routing:       r.routing,
 			Parent:        r.parent,

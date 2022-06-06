@@ -1601,8 +1601,8 @@ func (c *Client) Count(indices ...string) *CountService {
 }
 
 // Explain computes a score explanation for a query and a specific document.
-func (c *Client) Explain(index, typ, id string) *ExplainService {
-	return NewExplainService(c).Index(index).Type(typ).Id(id)
+func (c *Client) Explain(index, id string) *ExplainService {
+	return NewExplainService(c).Index(index).Id(id)
 }
 
 // TODO Search Template

@@ -14,33 +14,24 @@ func TestCountURL(t *testing.T) {
 
 	tests := []struct {
 		Indices  []string
-		Types    []string
 		Expected string
 	}{
 		{
 			[]string{},
-			[]string{},
 			"/_all/_count",
 		},
 		{
-			[]string{},
-			[]string{"tweet"},
-			"/_all/tweet/_count",
-		},
-		{
 			[]string{"twitter-*"},
-			[]string{"tweet", "follower"},
-			"/twitter-%2A/tweet%2Cfollower/_count",
+			"/twitter-%2A/_count",
 		},
 		{
 			[]string{"twitter-2014", "twitter-2015"},
-			[]string{"tweet", "follower"},
-			"/twitter-2014%2Ctwitter-2015/tweet%2Cfollower/_count",
+			"/twitter-2014%2Ctwitter-2015/_count",
 		},
 	}
 
 	for _, test := range tests {
-		path, _, err := client.Count().Index(test.Indices...).Type(test.Types...).buildURL()
+		path, _, err := client.Count().Index(test.Indices...).buildURL()
 		if err != nil {
 			t.Fatal(err)
 		}

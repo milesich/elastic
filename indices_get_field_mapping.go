@@ -29,7 +29,6 @@ type IndicesGetFieldMappingService struct {
 	headers    http.Header // custom request-level HTTP headers
 
 	index             []string
-	typ               []string
 	field             []string
 	local             *bool
 	ignoreUnavailable *bool
@@ -96,12 +95,6 @@ func (s *IndicesGetFieldMappingService) Index(indices ...string) *IndicesGetFiel
 	return s
 }
 
-// Type is a list of document types.
-func (s *IndicesGetFieldMappingService) Type(types ...string) *IndicesGetFieldMappingService {
-	s.typ = append(s.typ, types...)
-	return s
-}
-
 // Field is a list of fields.
 func (s *IndicesGetFieldMappingService) Field(fields ...string) *IndicesGetFieldMappingService {
 	s.field = append(s.field, fields...)
@@ -139,18 +132,12 @@ func (s *IndicesGetFieldMappingService) IgnoreUnavailable(ignoreUnavailable bool
 
 // buildURL builds the URL for the operation.
 func (s *IndicesGetFieldMappingService) buildURL() (string, url.Values, error) {
-	var index, typ, field []string
+	var index, field []string
 
 	if len(s.index) > 0 {
 		index = s.index
 	} else {
 		index = []string{"_all"}
-	}
-
-	if len(s.typ) > 0 {
-		typ = s.typ
-	} else {
-		typ = []string{"_all"}
 	}
 
 	if len(s.field) > 0 {
@@ -160,9 +147,8 @@ func (s *IndicesGetFieldMappingService) buildURL() (string, url.Values, error) {
 	}
 
 	// Build URL
-	path, err := uritemplates.Expand("/{index}/_mapping/{type}/field/{field}", map[string]string{
+	path, err := uritemplates.Expand("/{index}/_mapping/field/{field}", map[string]string{
 		"index": strings.Join(index, ","),
-		"type":  strings.Join(typ, ","),
 		"field": strings.Join(field, ","),
 	})
 	if err != nil {

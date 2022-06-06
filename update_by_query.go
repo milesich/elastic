@@ -25,7 +25,6 @@ type UpdateByQueryService struct {
 	headers    http.Header // custom request-level HTTP headers
 
 	index                  []string
-	typ                    []string
 	script                 *Script
 	query                  Query
 	body                   interface{}
@@ -127,13 +126,6 @@ func (s *UpdateByQueryService) Headers(headers http.Header) *UpdateByQueryServic
 // perform the operation on all indices.
 func (s *UpdateByQueryService) Index(index ...string) *UpdateByQueryService {
 	s.index = append(s.index, index...)
-	return s
-}
-
-// Type is a list of document types to search; leave empty to perform
-// the operation on all types.
-func (s *UpdateByQueryService) Type(typ ...string) *UpdateByQueryService {
-	s.typ = append(s.typ, typ...)
 	return s
 }
 
@@ -490,18 +482,9 @@ func (s *UpdateByQueryService) WaitForCompletion(waitForCompletion bool) *Update
 // buildURL builds the URL for the operation.
 func (s *UpdateByQueryService) buildURL() (string, url.Values, error) {
 	// Build URL
-	var err error
-	var path string
-	if len(s.typ) > 0 {
-		path, err = uritemplates.Expand("/{index}/{type}/_update_by_query", map[string]string{
-			"index": strings.Join(s.index, ","),
-			"type":  strings.Join(s.typ, ","),
-		})
-	} else {
-		path, err = uritemplates.Expand("/{index}/_update_by_query", map[string]string{
-			"index": strings.Join(s.index, ","),
-		})
-	}
+	path, err := uritemplates.Expand("/{index}/_update_by_query", map[string]string{
+		"index": strings.Join(s.index, ","),
+	})
 	if err != nil {
 		return "", url.Values{}, err
 	}

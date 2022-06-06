@@ -30,7 +30,6 @@ type GetService struct {
 	headers    http.Header // custom request-level HTTP headers
 
 	index                         string
-	typ                           string
 	id                            string
 	routing                       string
 	preference                    string
@@ -48,7 +47,6 @@ type GetService struct {
 func NewGetService(client *Client) *GetService {
 	return &GetService{
 		client: client,
-		typ:    "_doc",
 	}
 }
 
@@ -95,14 +93,6 @@ func (s *GetService) Headers(headers http.Header) *GetService {
 // Index is the name of the index.
 func (s *GetService) Index(index string) *GetService {
 	s.index = index
-	return s
-}
-
-// Type is the type of the document
-//
-// Deprecated: Types are in the process of being removed.
-func (s *GetService) Type(typ string) *GetService {
-	s.typ = typ
 	return s
 }
 
@@ -193,9 +183,6 @@ func (s *GetService) Validate() error {
 	if s.index == "" {
 		invalid = append(invalid, "Index")
 	}
-	if s.typ == "" {
-		invalid = append(invalid, "Type")
-	}
 	if len(invalid) > 0 {
 		return fmt.Errorf("missing required fields: %v", invalid)
 	}
@@ -205,10 +192,9 @@ func (s *GetService) Validate() error {
 // buildURL builds the URL for the operation.
 func (s *GetService) buildURL() (string, url.Values, error) {
 	// Build URL
-	path, err := uritemplates.Expand("/{index}/{type}/{id}", map[string]string{
+	path, err := uritemplates.Expand("/{index}/_doc/{id}", map[string]string{
 		"id":    s.id,
 		"index": s.index,
-		"type":  s.typ,
 	})
 	if err != nil {
 		return "", url.Values{}, err
@@ -300,7 +286,6 @@ func (s *GetService) Do(ctx context.Context) (*GetResult, error) {
 // GetResult is the outcome of GetService.Do.
 type GetResult struct {
 	Index       string                 `json:"_index"`   // index meta field
-	Type        string                 `json:"_type"`    // type meta field
 	Id          string                 `json:"_id"`      // id meta field
 	Uid         string                 `json:"_uid"`     // uid meta field (see MapperService.java for all meta fields)
 	Routing     string                 `json:"_routing"` // routing meta field

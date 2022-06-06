@@ -1367,48 +1367,24 @@ func TestSearchBuildURL(t *testing.T) {
 
 	tests := []struct {
 		Indices  []string
-		Types    []string
 		Expected string
 	}{
 		{
-			[]string{},
 			[]string{},
 			"/_search",
 		},
 		{
 			[]string{"index1"},
-			[]string{},
 			"/index1/_search",
 		},
 		{
 			[]string{"index1", "index2"},
-			[]string{},
 			"/index1%2Cindex2/_search",
-		},
-		{
-			[]string{},
-			[]string{"type1"},
-			"/_all/type1/_search",
-		},
-		{
-			[]string{"index1"},
-			[]string{"type1"},
-			"/index1/type1/_search",
-		},
-		{
-			[]string{"index1", "index2"},
-			[]string{"type1", "type2"},
-			"/index1%2Cindex2/type1%2Ctype2/_search",
-		},
-		{
-			[]string{},
-			[]string{"type1", "type2"},
-			"/_all/type1%2Ctype2/_search",
 		},
 	}
 
 	for i, test := range tests {
-		path, _, err := client.Search().Index(test.Indices...).Type(test.Types...).buildURL()
+		path, _, err := client.Search().Index(test.Indices...).buildURL()
 		if err != nil {
 			t.Errorf("case #%d: %v", i+1, err)
 			continue

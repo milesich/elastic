@@ -37,7 +37,6 @@ type BulkService struct {
 	headers    http.Header // custom request-level HTTP headers
 
 	index               string
-	typ                 string
 	requests            []BulkableRequest
 	pipeline            string
 	timeout             string
@@ -116,13 +115,6 @@ func (s *BulkService) Retrier(retrier Retrier) *BulkService {
 // this blank and specify the index in the individual bulk requests.
 func (s *BulkService) Index(index string) *BulkService {
 	s.index = index
-	return s
-}
-
-// Type specifies the type to use for all batches. You may also leave
-// this blank and specify the type in the individual bulk requests.
-func (s *BulkService) Type(typ string) *BulkService {
-	s.typ = typ
 	return s
 }
 
@@ -253,15 +245,6 @@ func (s *BulkService) Do(ctx context.Context) (*BulkResponse, error) {
 		}
 		path += index + "/"
 	}
-	if len(s.typ) > 0 {
-		typ, err := uritemplates.Expand("{type}", map[string]string{
-			"type": s.typ,
-		})
-		if err != nil {
-			return nil, err
-		}
-		path += typ + "/"
-	}
 	path += "_bulk"
 
 	// Parameters
@@ -329,7 +312,6 @@ func (s *BulkService) Do(ctx context.Context) (*BulkResponse, error) {
 //   "items":[{
 //     "index":{
 //       "_index":"index1",
-//       "_type":"tweet",
 //       "_id":"1",
 //       "_version":3,
 //       "status":201
@@ -337,7 +319,6 @@ func (s *BulkService) Do(ctx context.Context) (*BulkResponse, error) {
 //   },{
 //     "index":{
 //       "_index":"index2",
-//       "_type":"tweet",
 //       "_id":"2",
 //       "_version":3,
 //       "status":200
@@ -345,7 +326,6 @@ func (s *BulkService) Do(ctx context.Context) (*BulkResponse, error) {
 //   },{
 //     "delete":{
 //       "_index":"index1",
-//       "_type":"tweet",
 //       "_id":"1",
 //       "_version":4,
 //       "status":200,
@@ -354,7 +334,6 @@ func (s *BulkService) Do(ctx context.Context) (*BulkResponse, error) {
 //   },{
 //     "update":{
 //       "_index":"index2",
-//       "_type":"tweet",
 //       "_id":"2",
 //       "_version":4,
 //       "status":200
@@ -370,7 +349,6 @@ type BulkResponse struct {
 // BulkResponseItem is the result of a single bulk request.
 type BulkResponseItem struct {
 	Index         string        `json:"_index,omitempty"`
-	Type          string        `json:"_type,omitempty"`
 	Id            string        `json:"_id,omitempty"`
 	Version       int64         `json:"_version,omitempty"`
 	Result        string        `json:"result,omitempty"`

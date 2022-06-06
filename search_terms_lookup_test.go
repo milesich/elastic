@@ -10,7 +10,7 @@ import (
 )
 
 func TestTermsLookup(t *testing.T) {
-	tl := NewTermsLookup().Index("users").Type("user").Id("2").Path("followers")
+	tl := NewTermsLookup().Index("users").Id("2").Path("followers")
 	src, err := tl.Source()
 	if err != nil {
 		t.Fatal(err)
@@ -20,7 +20,7 @@ func TestTermsLookup(t *testing.T) {
 		t.Fatalf("marshaling to JSON failed: %v", err)
 	}
 	got := string(data)
-	expected := `{"id":"2","index":"users","path":"followers","type":"user"}`
+	expected := `{"id":"2","index":"users","path":"followers"}`
 	if got != expected {
 		t.Errorf("expected\n%s\n,got:\n%s", expected, got)
 	}

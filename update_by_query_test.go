@@ -18,50 +18,28 @@ func TestUpdateByQueryBuildURL(t *testing.T) {
 
 	tests := []struct {
 		Indices   []string
-		Types     []string
 		Expected  string
 		ExpectErr bool
 	}{
 		{
 			[]string{},
-			[]string{},
 			"",
 			true,
 		},
 		{
 			[]string{"index1"},
-			[]string{},
 			"/index1/_update_by_query",
 			false,
 		},
 		{
 			[]string{"index1", "index2"},
-			[]string{},
 			"/index1%2Cindex2/_update_by_query",
-			false,
-		},
-		{
-			[]string{},
-			[]string{"type1"},
-			"",
-			true,
-		},
-		{
-			[]string{"index1"},
-			[]string{"type1"},
-			"/index1/type1/_update_by_query",
-			false,
-		},
-		{
-			[]string{"index1", "index2"},
-			[]string{"type1", "type2"},
-			"/index1%2Cindex2/type1%2Ctype2/_update_by_query",
 			false,
 		},
 	}
 
 	for i, test := range tests {
-		builder := client.UpdateByQuery().Index(test.Indices...).Type(test.Types...)
+		builder := client.UpdateByQuery().Index(test.Indices...)
 		err := builder.Validate()
 		if err != nil {
 			if !test.ExpectErr {
@@ -212,7 +190,6 @@ func TestUpdateByQueryConflict(t *testing.T) {
 			"failures": [
 			  {
 				"index": "a",
-				"type": "_doc",
 				"id": "yjsmdGsBm363wfQmSbhj",
 				"cause": {
 				  "type": "version_conflict_engine_exception",
@@ -256,7 +233,7 @@ func TestUpdateByQueryConflict(t *testing.T) {
 	if len(res.Failures) != 1 {
 		t.Errorf("failures length should be 1, got %d", len(res.Failures))
 	}
-	expected := bulkIndexByScrollResponseFailure{Index: "a", Type: "_doc", Id: "yjsmdGsBm363wfQmSbhj", Status: 409}
+	expected := bulkIndexByScrollResponseFailure{Index: "a", Id: "yjsmdGsBm363wfQmSbhj", Status: 409}
 	if res.Failures[0] != expected {
 		t.Errorf("failures should be %+v, got %+v", expected, res.Failures[0])
 	}
